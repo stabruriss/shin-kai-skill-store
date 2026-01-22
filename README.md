@@ -7,6 +7,7 @@ A collection of Claude Code skills for enhancing productivity.
 | Skill | Description |
 |-------|-------------|
 | [prd-writing](.claude/skills/prd-writing/) | Helps PMs write clear, developer-friendly PRDs with dual-format output |
+| [cc-nano-banana](.claude/skills/cc-nano-banana/) | Generate and edit images using Gemini CLI's nanobanana extension |
 
 ## Quick Install
 
