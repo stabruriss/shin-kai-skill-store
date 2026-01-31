@@ -8,6 +8,7 @@ A collection of Claude Code skills for enhancing productivity.
 |-------|-------------|
 | [prd-writing](.claude/skills/prd-writing/) | Helps PMs write clear, developer-friendly PRDs with dual-format output |
 | [cc-nano-banana](.claude/skills/cc-nano-banana/) | Generate and edit images using Gemini CLI's nanobanana extension |
+| [datetime-travel](.claude/skills/datetime-travel/) | Time-aware assistant with automatic datetime checking and travel timezone switching |
 
 ## Quick Install
 

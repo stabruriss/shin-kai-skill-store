@@ -1,0 +1,136 @@
+#!/bin/bash
+# travel - Quick timezone switcher for temporary travel
+# Usage: travel <city> | travel home | travel status
+
+# City to timezone mapping
+declare -A CITY_TZ=(
+    ["beijing"]="Asia/Shanghai"
+    ["shanghai"]="Asia/Shanghai"
+    ["tokyo"]="Asia/Tokyo"
+    ["nyc"]="America/New_York"
+    ["newyork"]="America/New_York"
+    ["la"]="America/Los_Angeles"
+    ["losangeles"]="America/Los_Angeles"
+    ["london"]="Europe/London"
+    ["paris"]="Europe/Paris"
+    ["sydney"]="Australia/Sydney"
+    ["melbourne"]="Australia/Melbourne"
+    ["singapore"]="Asia/Singapore"
+    ["hongkong"]="Asia/Hong_Kong"
+    ["hk"]="Asia/Hong_Kong"
+    ["taipei"]="Asia/Taipei"
+    ["berlin"]="Europe/Berlin"
+    ["dubai"]="Asia/Dubai"
+    ["mumbai"]="Asia/Kolkata"
+    ["delhi"]="Asia/Kolkata"
+    ["seoul"]="Asia/Seoul"
+    ["bangkok"]="Asia/Bangkok"
+    ["toronto"]="America/Toronto"
+    ["vancouver"]="America/Vancouver"
+    ["mexico"]="America/Mexico_City"
+    ["saopaulo"]="America/Sao_Paulo"
+    ["buenosaires"]="America/Argentina/Buenos_Aires"
+    ["cairo"]="Africa/Cairo"
+    ["johannesburg"]="Africa/Johannesburg"
+    ["moscow"]="Europe/Moscow"
+    ["istanbul"]="Europe/Istanbul"
+    ["telaviv"]="Asia/Jerusalem"
+    ["jakarta"]="Asia/Jakarta"
+    ["manila"]="Asia/Manila"
+    ["kualalumpur"]="Asia/Kuala_Lumpur"
+    ["auckland"]="Pacific/Auckland"
+    ["honolulu"]="Pacific/Honolulu"
+    ["anchorage"]="America/Anchorage"
+    ["chicago"]="America/Chicago"
+    ["houston"]="America/Chicago"
+    ["denver"]="America/Denver"
+    ["phoenix"]="America/Phoenix"
+    ["seattle"]="America/Los_Angeles"
+    ["sandiego"]="America/Los_Angeles"
+    ["sandiego"]="America/Los_Angeles"
+    ["sf"]="America/Los_Angeles"
+    ["sanfrancisco"]="America/Los_Angeles"
+    ["bayarea"]="America/Los_Angeles"
+)
+
+TRAVEL_STATE="$HOME/.openclaw/.travel_state"
+HOME_TZ="America/Los_Angeles"  # 默认家时区
+
+# Show current status
+show_status() {
+    local current_tz=$(cat "$TRAVEL_STATE" 2>/dev/null || echo "$HOME_TZ")
+    local current_time=$(TZ="$current_tz" date +"%A, %B %d, %Y at %I:%M %p")
+    local home_time=$(TZ="$HOME_TZ" date +"%I:%M %p")
+    
+    echo "📍 Current timezone: $current_tz"
+    echo "🕐 Local time: $current_time"
+    echo "🏠 Home time (PT): $home_time"
+}
+
+# Travel to a city
+travel_to() {
+    local city="${1,,}"  # lowercase
+    local tz="${CITY_TZ[$city]}"
+    
+    if [ -z "$tz" ]; then
+        echo "❌ Unknown city: $1"
+        echo "Known cities: ${!CITY_TZ[*]}"
+        return 1
+    fi
+    
+    echo "$tz" > "$TRAVEL_STATE"
+    local local_time=$(TZ="$tz" date +"%A, %B %d at %I:%M %p")
+    echo "✈️  Travel mode: $1 ($tz)"
+    echo "🕐 Local time: $local_time"
+    echo "💡 Say 'travel home' to return to PT"
+}
+
+# Return home
+go_home() {
+    echo "$HOME_TZ" > "$TRAVEL_STATE"
+    local home_time=$(TZ="$HOME_TZ" date +"%A, %B %d at %I:%M %p PT")
+    echo "🏠 Back home!"
+    echo "🕐 Time: $home_time"
+}
+
+# Get current travel timezone (for other tools)
+get_travel_tz() {
+    cat "$TRAVEL_STATE" 2>/dev/null || echo "$HOME_TZ"
+}
+
+# Main
+case "$1" in
+    status|where|now)
+        show_status
+        ;;
+    home|reset|back)
+        go_home
+        ;;
+    get)
+        get_travel_tz
+        ;;
+    list|cities)
+        echo "Available cities:"
+        for city in "${!CITY_TZ[@]}"; do
+            echo "  - $city"
+        done | sort
+        ;;
+    help|--help|-h)
+        echo "Usage: travel <city>    - Switch to city's timezone"
+        echo "       travel home      - Return to PT (home)"
+        echo "       travel status    - Show current timezone"
+        echo "       travel list      - List available cities"
+        echo ""
+        echo "Examples:"
+        echo "  travel beijing"
+        echo "  travel nyc"
+        echo "  travel tokyo"
+        ;;
+    *)
+        if [ -z "$1" ]; then
+            show_status
+        else
+            travel_to "$1"
+        fi
+        ;;
+esac

@@ -1,0 +1,51 @@
+#!/bin/bash
+# datetime - Get current date and time in various formats
+# Usage: datetime [format]
+#   format: iso, unix, date, time, full, pt, travel (default: full)
+
+TRAVEL_STATE="$HOME/.openclaw/.travel_state"
+HOME_TZ="America/Los_Angeles"
+
+# Get current effective timezone
+get_effective_tz() {
+    if [ -f "$TRAVEL_STATE" ]; then
+        cat "$TRAVEL_STATE"
+    else
+        echo "$HOME_TZ"
+    fi
+}
+
+get_datetime() {
+    local format="${1:-full}"
+    local tz=$(get_effective_tz)
+    local tz_short=$(basename "$tz" | sed 's/_/ /g')
+    
+    case "$format" in
+        travel|here|now)
+            TZ="$tz" date +"%A, %B %d, %Y at %I:%M %p ($tz_short)"
+            ;;
+        pt|pacific|home)
+            TZ="America/Los_Angeles" date +"%A, %B %d, %Y at %I:%M %p PT"
+            ;;
+        iso)
+            date -u +"%Y-%m-%dT%H:%M:%SZ"
+            ;;
+        unix)
+            date +%s
+            ;;
+        date)
+            date +"%Y-%m-%d"
+            ;;
+        time)
+            date +"%H:%M:%S"
+            ;;
+        full|*)
+            TZ="$tz" date +"%A, %B %d, %Y at %I:%M %p ($tz_short)"
+            ;;
+    esac
+}
+
+# If called directly
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    get_datetime "$1"
+fi
