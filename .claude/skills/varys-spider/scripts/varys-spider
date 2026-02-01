@@ -1,0 +1,79 @@
+#!/bin/bash
+# varys-spider - The Master of Whisperers' command center
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$1" in
+  --check-network|check-network|check)
+    python3 "$SCRIPT_DIR/check-network.py"
+    ;;
+
+  init|setup)
+    python3 "$SCRIPT_DIR/config.py" init
+    echo "" 
+    echo "Config: ~/.openclaw/varys-spider/config.json"
+    echo "Feedback: ~/.openclaw/varys-spider/feedback.json"
+    ;;
+
+  report|daily|briefing)
+    python3 "$SCRIPT_DIR/generate.py"
+    ;;
+
+  query|inquire|ask)
+    python3 "$SCRIPT_DIR/inquire.py" "${@:2}"
+    ;;
+
+  followup)
+    echo "(TODO: followup based on cached briefing)" 
+    ;;
+
+  config)
+    python3 "$SCRIPT_DIR/config.py" "${@:2}"
+    ;;
+
+  feedback)
+    python3 "$SCRIPT_DIR/feedback.py" "${@:2}"
+    ;;
+
+  whisper|feedback-text)
+    python3 "$SCRIPT_DIR/whisper.py" "${@:2}"
+    ;;
+
+  web|network|sources)
+    # legacy: show/edit the old web.json; config.json is primary now.
+    python3 "$SCRIPT_DIR/web.py" "${@:2}"
+    ;;
+
+  help|--help|-h|"" )
+    cat << 'EOF'
+🕷️  Varys Spider
+
+Core idea:
+- Generate daily briefings from multiple sources
+- User preferences live in a durable config file
+- Feedback is recorded durably for later agent judgement (optional learning)
+
+Files:
+  ~/.openclaw/varys-spider/config.json
+  ~/.openclaw/varys-spider/feedback.json
+
+Commands:
+  varys-spider init
+  varys-spider report
+  varys-spider config get output
+  varys-spider config set mix.twitter 8
+  varys-spider config set sources.twitter.focus_accounts "[\"openclaw\",\"moltbook\"]"
+  varys-spider feedback show
+  varys-spider whisper "4 Moltbook那条置信度应该更低"
+
+Notes:
+- Twitter requires env AUTH_TOKEN + CT0 (we do not store secrets in config).
+EOF
+    ;;
+
+  *)
+    echo "Unknown command: $1"
+    echo "Use 'varys-spider help' for usage."
+    exit 1
+    ;;
+esac
