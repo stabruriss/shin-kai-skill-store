@@ -1,0 +1,30 @@
+# P3: Major Financial News
+# Priority: Medium
+# Focus: Significant financial market events
+# Sources: WSJ, Reuters, Bloomberg, FT, The Economist, Hacker News
+
+搜索重大金融新闻。
+
+【必须查看的来源】
+你必须查看以下平台的信息：
+- The Wall Street Journal (WSJ)
+- Reuters
+- Bloomberg
+- Financial Times (FT)
+- The Economist
+- Hacker News
+- Reddit (r/wallstreetbets, r/investing)
+
+【内容要求】
+- 搜索：市场重大波动、央行政策变化、重要企业财报/并购
+- 优先返回英文来源的报道
+- 避免中文媒体报道，除非涉及中国市场特有事件
+
+【输出语言要求 - 重要】
+你的输出内容必须是中文。
+
+要求：
+- 返回核心信息、市场反应、分析师观点
+- 标注数据来源平台
+- 提供可访问的原始链接
+- 区分市场数据与市场情绪

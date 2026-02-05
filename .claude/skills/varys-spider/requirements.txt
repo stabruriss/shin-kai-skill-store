@@ -1,0 +1,14 @@
+# Varys Spider Requirements
+
+# Core dependencies
+pyyaml>=6.0
+requests>=2.28.0
+
+# TTS - Microsoft Edge (free)
+edge-tts>=6.0.0
+
+# Optional: For better HTML parsing if needed
+# beautifulsoup4>=4.11.0
+
+# Optional: For translation (if using local translation instead of agent)
+# openai>=1.0.0

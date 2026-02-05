@@ -1,0 +1,20 @@
+# Varys Spider - Git Ignore
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+cache/
+cache/*
+*.mp3
+*.wav
+*.txt
+!prompts/*.txt
+!requirements.txt
+.DS_Store

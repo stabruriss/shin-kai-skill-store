@@ -1,114 +1,214 @@
 ---
 name: varys-spider
-description: Multi-source intelligence briefing skill (RSS, Twitter/X via bird, Hacker News, GitHub Trending, Techmeme) with credibility seals, durable user configuration (language, source mix/quotas, focus accounts, topics), and durable feedback recording (feedback.json) enabling optional long-run learning. Varys speaks as a spider with eyes and ears throughout the realm.
+description: Generate hybrid intelligence briefings combining Twitter/X (via bird CLI) and Perplexity for multi-source news aggregation with Chinese audio summaries. Use when the user asks for "简报", "briefing", "情报简报", or automated news aggregation with Chinese audio output.
 ---
 
-# 🕷️ Varys Spider
+# Varys Spider
 
-*"The Spider has his eyes and ears throughout the realm. I bring you what is known, what is suspected, and what is mere tavern gossip."*
+A hybrid intelligence briefing skill combining Twitter/X (via bird CLI) and Perplexity for multi-source news aggregation with Chinese audio summaries.
 
-## ⚠️ First Time Setup - The Spider's Network
+## Overview
 
-When this skill loads, the agent MUST verify available intelligence sources and guide setup.
+Varys Spider generates bilingual (Chinese-focused) intelligence briefings with:
+- **Audio summary** (Chinese TTS via Edge TTS) - sent FIRST
+- **Text digest** with inline citations - sent AFTER audio
 
-### Prerequisites Check
+Data sources:
+- **Bird (Twitter/X)**: Focus account monitoring via [bird CLI](https://github.com/steipete/bird) with cookie auth
+- **Perplexity**: Real-time web search with prompt-driven queries (P1/P2/P3 priority), output in Chinese
 
-Run: `varys-spider --check-network`
+## Features
 
-**Core Tools (Required):**
-- [ ] `python3` 3.8+ - For running the Spider's scripts
-- [ ] `curl` or `wget` - For web requests
+- **Dual-source collection**: Twitter/X + Perplexity web search
+- **Quality gates**: Signal scoring + Diversity gate + Trust level classification
+- **Chinese-first output**: Audio narration and text in Chinese
+- **Inline citations**: Sources attached to each item, not listed at end
+- **Audio-first delivery**: TTS audio sent before text digest
+- **Trust levels**: 5-tier credibility system (🏛️📊🔥💭🍺)
+- **Time-aware queries**: Current timestamp added to Perplexity prompts to avoid duplicates
+- **Source-specific prompts**: Perplexity searches prioritize Reddit, Hacker News, WSJ, Reuters, BBC, AP, The Economist
 
-**Information Sources (Enable what you can):**
+## Prerequisites
 
-#### Tier 1: Little Birds (Social Media)
-| Source | Cost | Auth Required | Priority |
-|--------|------|---------------|----------|
-| Twitter/X (bird) | Free | ✅ AUTH_TOKEN, CT0 | High |
-| Reddit API | Free | ✅ Reddit app | Medium |
-| Hacker News API | **FREE** | ❌ No auth | High |
-
-#### Tier 2: The Citadel (News)
-| Source | Cost | Auth Required | Priority |
-|--------|------|---------------|----------|
-| RSS Feeds (Reuters, BBC) | **FREE** | ❌ No auth | High |
-| NewsAPI | Free tier | ✅ API Key | Medium |
-| Techmeme | **FREE** | ❌ Scraping | Medium |
-
-#### Tier 3: The Underworld (Niche)
-| Source | Cost | Auth Required | Notes |
-|--------|------|---------------|-------|
-| GitHub Trending | **FREE** | ❌ No auth | Tech/dev focus |
-| arXiv API | **FREE** | ❌ No auth | Research papers |
-| Product Hunt | Free tier | ✅ Token | Product launches |
-
-### Minimal Setup (Works Immediately)
-```bash
-# Just these - all FREE, no auth required:
-# - RSS feeds (Reuters, BBC, AP)
-# - Hacker News API
-# - GitHub Trending
-# - Techmeme scraping
-```
-
-### Recommended Setup
-```bash
-# Plus these for better coverage:
-# - Twitter (bird CLI + credentials)
-# - NewsAPI (free tier, 100 req/day)
-```
-
-### Full Network
-```bash
-# All sources configured
-```
-
-## 🎭 Commands
+### 1. Install bird CLI
 
 ```bash
-# Setup / health
-varys-spider --check-network            # Check available sources
-varys-spider init                       # Create ~/.openclaw/varys-spider/config.json + feedback.json
-
-# Daily intelligence
-varys-spider report                     # Generate briefing (reads config.json)
-
-# Queries
-varys-spider query "moltbook"           # On-demand keyword query (respects config)
-
-# Configuration (durable; no need to repeat preferences every time)
-varys-spider config get output
-varys-spider config set output.language '"zh"'
-varys-spider config set mix.twitter 8
-varys-spider config set sources.twitter.focus_accounts '["openclaw","moltbook"]'
-varys-spider config add-topic cybersecurity
-varys-spider config remove-source twitter
-
-# Feedback (durable; enables optional long-run learning)
-varys-spider whisper "4 Moltbook那条置信度应该更低"
-varys-spider feedback show
-
-# Legacy network manager (web.json). config.json is the primary interface now.
-varys-spider web show
+npm install -g @steipete/bird
 ```
 
-### Configuration Files
-- `~/.openclaw/varys-spider/config.json` — language, mix/quotas, focus accounts, topics
-- `~/.openclaw/varys-spider/feedback.json` — user feedback log for later analysis
+Or use npx without installing:
+```bash
+npx @steipete/bird whoami
+```
 
-### Twitter/X Note
-Twitter collection is supported via `bird`, but secrets are **not stored** in config.
-Set `AUTH_TOKEN` and `CT0` in environment when running/cron.
+### 2. Get Twitter Cookies
 
+1. Log in to x.com in your browser
+2. Open DevTools (F12) → Application/Storage → Cookies
+3. Copy `auth_token` and `ct0` values
 
-## 📡 Intelligence Seals
+### 3. Install Python Dependencies
 
-| Seal | Meaning | Confidence |
-|------|---------|------------|
-| 🟣 **Spider's Web** | 3+ authoritative sources | 90%+ |
-| 🔵 **The Citadel** | Reputable news outlet | 75-89% |
-| 🟢 **Little Birds** | Aggregated social intel | 60-74% |
-| 🟡 **Tavern Whispers** | Single social source | <60% |
-| 🔴 **The Dungeons** | Unverified rumor | Flag |
+```bash
+pip3 install edge-tts requests
+```
 
-*"Knowledge is power, but verified knowledge is true power."* — Varys
+## Quick Start
+
+```bash
+# Set credentials
+export BIRD_AUTH_TOKEN="your_auth_token_here"
+export BIRD_CT0="your_ct0_cookie_here"
+export OPENROUTER_API_KEY="sk-or-v1-your_key_here"
+
+# Run a briefing
+python3 scripts/main.py --edition morning --output both --target 8509139631
+```
+
+## Configuration
+
+### Credentials (.env file)
+
+Create `.env` in skill root:
+
+```bash
+# Twitter/X Web Cookie Auth (from browser dev tools)
+BIRD_AUTH_TOKEN=your_auth_token_here
+BIRD_CT0=your_ct0_cookie_here
+
+# OpenRouter API Key for Perplexity
+OPENROUTER_API_KEY=sk-or-v1-your_key_here
+```
+
+### Focus Accounts
+
+Edit `scripts/config_loader.py` to customize:
+
+```python
+focus_accounts = [
+    # AI/Tech
+    "mranti", "wuyuesanren", "op7418", "dair_ai", "yetone",
+    "steipete", "bcherny", "gregisenberg", "emollick",
+    # Finance/Trading
+    "WallStTV", "yriica", "fxtrader", "rryssf_",
+    # Politics/Polling
+    "CookPolitical", "FiveThirtyEight", "DecisionDeskHQ",
+    "Redistrict", "gelliottmorris",
+    # Mainstream Media
+    "BBCWorld", "BBCBreaking", "Reuters", "WSJ",
+    "nytimes", "TheEconomist",
+    # Chinese Community
+    "renfanzi", "dotey", "lifesinger", "vista8",
+    "fanshimin", "superzen", "Alex8282019"
+]
+```
+
+### Perplexity Prompts
+
+Prompts are configured to:
+- **Specify required sources**: Reddit, Hacker News, WSJ, Reuters, BBC, AP, The Economist
+- **Require Chinese output**: "你的输出内容必须是中文"
+- **Avoid Chinese media**: Unless China-specific events
+- **Include current timestamp**: To avoid duplicate results
+
+## Output Format
+
+### Audio (Chinese TTS)
+
+- Generated via Microsoft Edge TTS (free)
+- Voice: zh-CN-XiaoxiaoNeural
+- Max duration: 5 minutes
+- Sent FIRST to Telegram
+
+### Text Digest
+
+Format per item:
+```
+—-
+
+🐦 @username
+
+——————————————————
+可信度：📊 专业评论
+——————————————————
+[原文 - English]
+{Tweet content}
+——————————————————
+[中文翻译]
+(请将此部分翻译成中文)
+
+来源 1: https://x.com/username/status/123456
+
+————
+```
+
+## Architecture
+
+```
+Fetch (Bird CLI + Perplexity)
+    ↓
+Filter (deduplicate, exclude ads/sports/entertainment)
+    ↓
+Trust Level Classification (5-tier system)
+    ↓
+Signal Scoring (P1/P2/P3 + diversity gate)
+    ↓
+Format (text with inline citations + TTS script)
+    ↓
+Generate Audio (Edge TTS)
+    ↓
+Deliver (Audio FIRST → Text)
+```
+
+## Delivery Order
+
+1. **Audio message** (as voice) - Chinese TTS summary
+2. **Text digest** - Full content with inline citations (may split into multiple messages)
+
+## Quality Gates
+
+### Diversity Gate
+- Single author ≤ 6 items
+- ≥ 3 different signal tiers (P1/P2/P3)
+
+### Signal Gate
+- Average score ≥ 10
+- Must have ≥ 1 P2 or P3 items
+
+## File Structure
+
+```
+varys-spider/
+├── SKILL.md                    # This file
+├── config.yaml                 # Configuration
+├── .env.example                # Credentials template
+├── .gitignore
+├── requirements.txt            # Python dependencies
+├── test.sh                     # Quick test script
+├── prompts/
+│   ├── p1_ai_immigration.txt  # P1: AI+移民
+│   ├── p2_politics.txt        # P2: 政治
+│   └── p3_finance.txt         # P3: 金融
+└── scripts/
+    ├── main.py                 # Entry point
+    ├── config_loader.py        # Config parser
+    ├── fetch_bird.py           # Twitter/X via bird CLI
+    ├── fetch_perplexity.py     # Perplexity search
+    ├── filter.py               # Content filtering
+    ├── trust_level.py          # Credibility classification
+    ├── signal.py               # Scoring & gates
+    ├── format.py               # Output formatting
+    ├── audio.py                # TTS generation
+    └── deliver.py              # Telegram delivery
+```
+
+## Dependencies
+
+- Python 3.11+
+- Node.js + npm (for bird CLI)
+- edge-tts (Python TTS library)
+- requests (HTTP library)
+
+## License
+
+MIT

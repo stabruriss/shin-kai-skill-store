@@ -1,0 +1,204 @@
+# Varys Spider Configuration
+# Hybrid: Bird (Twitter) + Perplexity
+
+sources:
+  bird:
+    enabled: true
+    bearer_token: ${BIRD_API_TOKEN}
+    focus_accounts:
+      # AI/Tech Core (from sodawhite_dev list)
+      - karpathy
+      - sama
+      - ylecun
+      - andrewyng
+      - fchollet
+      - drjimfan
+      - emollick
+      - hwchase17
+      - jerryjliu0
+      - simonw
+      - hamelhusain
+      - swyx
+      - mckaywrigley
+      - amasad
+      - rauchg
+      - _akhaliq
+      - geoffreylitt
+      - goodside
+      - alexalbert__
+      - mattshumer_
+      - godofprompt
+      - rowancheung
+      - linusekenstam
+      - heybarsee
+      - itspaulai
+      - bentossell
+      - aaditsh
+      - petergyang
+      # Original AI/Tech
+      - mranti
+      - wuyuesanren
+      - op7418
+      - dair_ai
+      - yetone
+      - steipete
+      - bcherny
+      - gregisenberg
+      # Finance/Trading
+      - WallStTV
+      - yriica
+      - fxtrader
+      - rryssf_
+      # Politics/Polling
+      - CookPolitical
+      - FiveThirtyEight
+      - DecisionDeskHQ
+      - Redistrict
+      - gelliottmorris
+      # Mainstream Media
+      - BBCWorld
+      - BBCBreaking
+      - Reuters
+      - WSJ
+      - nytimes
+      - TheEconomist
+      # Chinese Community
+      - renfanzi
+      - dotey
+      - lifesinger
+      - vista8
+      - fanshimin
+      - superzen
+      - Alex8282019
+      - lxfater
+      - wshuyi
+      - oran_ge
+      - imxiaohu
+    max_items: 100
+    include_replies: false
+    include_retweets: true
+    time_window_hours: 6
+    
+  perplexity:
+    enabled: false
+    api_key: ${OPENROUTER_API_KEY}
+    base_url: "https://openrouter.ai/api/v1"
+    model: "perplexity/sonar-pro"
+    max_items_per_query: 10
+    prompts:
+      P1: "搜索过去几小时内 AI 社区的热门讨论。优先关注：Reddit (r/MachineLearning, r/artificial, r/OpenAI), Hacker News, WSJ, Reuters, BBC, AP, The Economist。避免中文媒体。搜索：AI技术突破、模型发布、开源项目、热点争议、美国移民政策变动（H1B/绿卡/签证）。返回讨论主题、核心观点、来源平台、链接"
+      P2: "搜索重大政治新闻事件。优先关注：Reuters, BBC, AP, WSJ, The Economist, Reddit (r/politics, r/worldnews)。避免中文媒体。搜索：美国国内政治动态、国际关系重大变化、选举相关进展。返回事件概述、关键人物、影响分析、来源平台、链接"
+      P3: "搜索重大金融新闻。优先关注：WSJ, Reuters, Bloomberg, FT, The Economist, Hacker News。避免中文媒体。搜索：市场重大波动、央行政策变化、重要企业财报/并购。返回核心信息、市场反应、分析师观点、来源平台、链接"
+
+briefings:
+  morning:
+    name: "早间版"
+    time: "09:00"
+    timezone: "America/Los_Angeles"
+    audio_first: true
+    
+  afternoon:
+    name: "下午版"
+    time: "13:00"
+    timezone: "America/Los_Angeles"
+    audio_first: true
+    
+  evening:
+    name: "晚间版"
+    time: "19:00"
+    timezone: "America/Los_Angeles"
+    audio_first: true
+    
+  night:
+    name: "深夜版"
+    time: "23:00"
+    timezone: "America/Los_Angeles"
+    audio_first: true
+
+quality:
+  signal_threshold: 10
+  min_p2_p3_count: 1
+  max_per_author: 6
+  min_diversity: 3
+  exclude_categories:
+    - sports
+    - entertainment
+    - ads
+    - promotions
+    
+trust_levels:
+  authoritative:
+    name: "权威事实"
+    emoji: "🏛️"
+    score: 5
+    sources: [BBC, Reuters, WSJ, NYT, Economist, 官方账号]
+    
+  professional:
+    name: "专业评论"
+    emoji: "📊"
+    score: 4
+    sources: [分析师, 行业专家, 研究机构]
+    
+  community:
+    name: "社区热议"
+    emoji: "🔥"
+    score: 3
+    sources: [Twitter讨论, Reddit热帖]
+    
+  personal:
+    name: "个人观点"
+    emoji: "💭"
+    score: 2
+    sources: [个人账号, 博客]
+    
+  rumor:
+    name: "酒馆传闻"
+    emoji: "🍺"
+    score: 1
+    sources: [未经证实, 传闻]
+
+output:
+  text:
+    min_items: 10
+    max_items: 30
+    max_chars_per_item: 200
+    separator: "\n\n—-\n\n"
+    divider: "——————————————————"
+    
+  audio:
+    language: "zh-CN"
+    max_duration: 300  # 5 minutes
+    max_chars: 1500    # Approximate for TTS
+    intro_template: "这里是 Varys Spider 情报简报。{date} {time}，{edition}。"
+    outro_template: "感谢收听，我们{next_edition}再见。"
+    remove_patterns:
+      - "http[s]?://[^\\s]+"  # URLs
+      - "@[\\w]+"              # @mentions
+      - "#[\\w]+"              # hashtags
+    keep_english:
+      - "GPT"
+      - "API"
+      - "LLM"
+      - "AI"
+      - "OpenAI"
+      - "Google"
+      - "Meta"
+      - "Nvidia"
+      - "H1B"
+      - "OPT"
+      - "CEO"
+      - "CTO"
+    pronunciation:
+      GPT: "G-P-T"
+      API: "A-P-I"
+      LLM: "L-L-M"
+      CEO: "C-E-O"
+      CTO: "C-T-O"
+      H1B: "H-1-B"
+      OPT: "O-P-T"
+
+cache:
+  raw: "cache/raw"
+  processed: "cache/processed"
+  output: "cache/output"
+  ttl_hours: 24

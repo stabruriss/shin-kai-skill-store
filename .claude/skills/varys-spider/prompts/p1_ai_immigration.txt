@@ -1,0 +1,30 @@
+# P1: AI Community + Immigration
+# Priority: Highest
+# Focus: AI breakthroughs, community discussions, US immigration policy changes
+# Sources: Reddit, Hacker News, WSJ, Reuters, BBC, AP, The Economist
+
+搜索过去几小时内 AI 社区的热门讨论。
+
+【必须查看的来源】
+你必须查看以下平台的信息：
+- Reddit (r/MachineLearning, r/artificial, r/OpenAI, r/LocalLLaMA 等)
+- Hacker News
+- The Wall Street Journal (WSJ)
+- Reuters
+- BBC
+- Associated Press (AP)
+- The Economist
+
+【内容要求】
+- 搜索：AI技术突破、模型发布、开源项目、热点争议、美国移民政策变动（H1B/绿卡/签证）
+- 优先返回英文来源的内容
+- 避免中文媒体报道，除非涉及中国特有事件
+
+【输出语言要求 - 重要】
+你的输出内容必须是中文。
+
+要求：
+- 返回讨论主题、核心观点、涉及的主要人物/公司
+- 标注信息来源平台
+- 提供可访问的原始链接
+- 区分事实与观点

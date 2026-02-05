@@ -1,0 +1,29 @@
+# P2: Major Political News
+# Priority: High
+# Focus: Significant political events
+# Sources: Reuters, BBC, AP, WSJ, The Economist, Reddit
+
+搜索重大政治新闻事件。
+
+【必须查看的来源】
+你必须查看以下平台的信息：
+- Reuters
+- BBC
+- Associated Press (AP)
+- The Wall Street Journal (WSJ)
+- The Economist
+- Reddit (r/politics, r/worldnews)
+
+【内容要求】
+- 搜索：美国国内政治动态、国际关系重大变化、选举相关进展
+- 优先返回英文来源的报道
+- 避免中文媒体报道，除非涉及中国特有事件
+
+【输出语言要求 - 重要】
+你的输出内容必须是中文。
+
+要求：
+- 返回事件概述、关键人物、影响分析
+- 标注数据来源平台
+- 提供可访问的原始链接
+- 区分已确认事实与分析预测
