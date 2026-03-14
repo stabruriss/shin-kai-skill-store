@@ -10,6 +10,7 @@ A collection of Claude Code skills for enhancing productivity.
 | [cc-nano-banana](.claude/skills/cc-nano-banana/) | Generate and edit images using Gemini CLI's nanobanana extension |
 | [datetime-travel](.claude/skills/datetime-travel/) | Time-aware assistant with automatic datetime checking and travel timezone switching |
 | [varys-spider](.claude/skills/varys-spider/) | Multi-source intelligence briefing with credibility seals, durable config, and feedback learning |
+| [frontend-design](.claude/skills/frontend-design/) | Create distinctive, production-grade frontend interfaces with high design quality |
 
 ## Quick Install
 
