@@ -1,7 +1,8 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
+description: Create distinctive, production-grade frontend interfaces with high design quality and on-demand SVG asset generation via Quiver AI. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code with integrated SVG logos, icons, and illustrations.
 license: Complete terms in LICENSE.txt
+allowed-tools: Bash(curl:*)
 ---
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
@@ -40,3 +41,57 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## SVG Asset Generation (Quiver AI)
+
+When a frontend design needs custom vector assets — logos, icons, illustrations, decorative elements, hero graphics, dividers, or background patterns — use the Quiver AI API to generate production-ready SVGs on demand.
+
+### Setup
+
+The API requires the environment variable `QUIVER_AI_API_KEY`. Before making any API calls:
+
+1. Check if `QUIVER_AI_API_KEY` is set in the environment
+2. If not set, **ask the user for their Quiver AI API key** before proceeding
+3. Keys can be obtained at https://app.quiver.ai/settings/api-keys
+
+### Text-to-SVG Generation
+
+Generate SVGs from descriptive text prompts:
+
+```bash
+curl --request POST \
+  --url https://api.quiver.ai/v1/svgs/generations \
+  --header "Authorization: Bearer $QUIVER_AI_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "model": "arrow-preview",
+    "prompt": "A geometric logo for a fintech startup, minimal lines, sharp angles",
+    "n": 1,
+    "stream": false
+  }'
+```
+
+### Image-to-SVG Vectorization
+
+Convert existing raster images (PNG, JPG) into clean SVG vectors:
+
+```bash
+curl --request POST \
+  --url https://api.quiver.ai/v1/svgs/vectorizations \
+  --header "Authorization: Bearer $QUIVER_AI_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "model": "arrow-preview",
+    "image": "<base64-encoded-image-or-url>",
+    "n": 1,
+    "stream": false
+  }'
+```
+
+### Best Practices
+
+- **Prompt with aesthetic context**: Write prompts that match the design's tone and direction. Instead of "a logo", write "a brutalist monochrome logo with raw geometric shapes and sharp edges" — align the SVG style with the overall frontend aesthetic.
+- **Color coherence**: Reference the design's color palette in the prompt so generated SVGs harmonize with the interface.
+- **Inline embedding**: Embed SVGs directly in HTML/JSX for maximum flexibility — this enables CSS styling, hover animations, theme-aware color switching, and dynamic manipulation.
+- **Generate variations**: Use `"n": 2` or `"n": 3` to get multiple options, then pick the best fit.
+- **Rate limit**: 20 requests per 60 seconds per organization. Plan batch generation accordingly.
